@@ -4,6 +4,7 @@ import { addIngredient } from '../../services/slices/constructorSlice';
 import { BurgerIngredientUI } from '@ui';
 import { TBurgerIngredientProps } from './type';
 import { useDispatch} from 'react-redux';
+import { AppDispatch } from 'src/services/store';
 
 export const BurgerIngredient: FC<TBurgerIngredientProps> = memo(
   ({ ingredient, count }) => {
@@ -11,7 +12,7 @@ export const BurgerIngredient: FC<TBurgerIngredientProps> = memo(
    const dispatch = useDispatch();
 
     const handleAdd = () => {
-      //console.log('Adding ingredient:', ingredient);
+      console.log('Adding ingredient:', ingredient);
      dispatch(addIngredient(ingredient));
     };
     

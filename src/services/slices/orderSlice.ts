@@ -1,9 +1,173 @@
 import { createSlice, PayloadAction,createAsyncThunk } from '@reduxjs/toolkit';
 import { TOrder, TIngredient ,TOrdersData } from '@utils-types';
-import { getIngredientsApi, orderBurgerApi,getOrdersApi} from '../../utils/burger-api';
+import { orderBurgerApi, getOrdersApi} from '../../utils/burger-api';
 
+
+interface OrderState {
+  orders: TOrder[];
+  total: number;
+  totalToday: number;
+  loading: boolean;          
+  error: string | null;      
+  placingOrder: boolean;      
+  placeOrderError: string | null; 
+  orderNumber?: number;
+
+  // новые поля
+  orderRequest: boolean;
+  orderSuccess: boolean;
+  orderError: string | null;
+  orderModalData: TOrder | null;
+}
+
+// Начальное состояние
+const initialState: OrderState = {
+  orders: [],
+  total: 0,
+  totalToday: 0,
+  loading: false,
+  error: null,
+  placingOrder: false,
+  placeOrderError: null,
+  orderNumber: undefined,
+
+  // новые поля
+  orderRequest: false,
+  orderSuccess: false,
+  orderError: null,
+  orderModalData: null,
+};
+
+export const createOrder = createAsyncThunk<
+  TOrder,
+  string[],
+  { rejectValue: string }
+>(
+  'burgerConstructor/createOrder',
+  async (ingredientsIds, thunkAPI) => {
+    try {
+      const response = await orderBurgerApi(ingredientsIds);
+      return response.order;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error.message || 'Ошибка при оформлении заказа');
+    }
+  }
+);
+
+// Асинхронный thunk для получения списка заказов пользователя
+export const fetchOrders = createAsyncThunk<
+  TOrder[], // успешный результат
+  void, // аргумент (нет)
+  { rejectValue: string }
+>('order/fetchOrders', async (_, thunkAPI) => {
+  try {
+    const orders = await getOrdersApi();
+    return orders;
+  } catch (err) {
+    return thunkAPI.rejectWithValue((err as Error).message);
+  }
+});
+
+// Асинхронный thunk для создания нового заказа
+export const placeOrder = createAsyncThunk<
+  { order: TOrder }, // ответ с заказом
+  string[], // массив id ингредиентов
+  { rejectValue: string }
+>('order/placeOrder', async (ingredientIds, thunkAPI) => {
+  try {
+    const response = await orderBurgerApi(ingredientIds);
+    return { order: response.order };
+  } catch (err) {
+    return thunkAPI.rejectWithValue((err as Error).message);
+  }
+});
+
+const orderSlice = createSlice({
+  name: 'order',
+  initialState,
+  reducers: {
+    // закрытие модального окна и сброс статусов
+    closeOrderModal: (state) => {
+      state.orderModalData = null;
+      state.orderSuccess = false;
+      state.orderError = null;
+    },
+  },
+  extraReducers: (builder) => {
+    // Обработка fetchOrders
+    builder
+      .addCase(fetchOrders.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        fetchOrders.fulfilled,
+        (state, action: PayloadAction<TOrder[]>) => {
+          state.loading = false;
+          state.orders = action.payload;
+          // добавbnm их к state total и totalToday
+        }
+      )
+      .addCase(fetchOrders.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || 'Ошибка при получении заказов';
+      });
+
+    // Обработка placeOrder
+    builder
+      .addCase(placeOrder.pending, (state) => {
+        state.placingOrder = true;
+        state.placeOrderError = null;
+      })
+      .addCase(
+        placeOrder.fulfilled,
+        (state, action: PayloadAction<{ order: TOrder }>) => {
+          state.placingOrder = false;
+          // Добавляем заказ в список заказов
+          state.orders.push(action.payload.order);
+          // Сохраняем номер заказа
+          state.orderNumber = action.payload.order.number;
+        }
+      )
+      .addCase(
+        placeOrder.rejected,
+        (state, action) => {
+          state.placingOrder = false;
+          state.placeOrderError = action.payload || 'Ошибка оформления заказа';
+        }
+      );
+
+    // Обработка createOrder
+    builder
+      .addCase(createOrder.pending, (state) => {
+        state.orderRequest = true;
+        state.orderError = null;
+        state.orderSuccess = false;
+      })
+      .addCase(
+        createOrder.fulfilled,
+        (state, action: PayloadAction<TOrder>) => {
+          state.orderModalData = action.payload;
+          state.orderRequest = false;
+          state.orderSuccess = true;
+        }
+      )
+      .addCase(
+        createOrder.rejected,
+        (state, action) => {
+          state.orderRequest = false;
+          state.orderError = action.payload || 'Неизвестная ошибка';
+        }
+      );
+  },
+});
+
+export const { closeOrderModal } = orderSlice.actions;
+
+export default orderSlice.reducer;
 
 /// Тип состояния слайса заказа
+/*
 interface OrderState {
   orders: TOrder[];
   total: number;
@@ -105,7 +269,7 @@ const orderSlice = createSlice({
 export const { clearOrderState } = orderSlice.actions;
 
 export default orderSlice.reducer;
-
+*/
 /*
 interface ModalData {
     id: string;

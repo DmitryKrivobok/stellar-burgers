@@ -3,8 +3,7 @@ import { TConstructorIngredient } from '@utils-types';
 import { BurgerConstructorUI } from '@ui';
 import { useSelector, useDispatch} from 'react-redux';
 import { RootState, AppDispatch } from 'src/services/store';
-import {createOrder,
-  closeOrderModal } from '../../services/slices/constructorSlice';
+import {createOrder,closeOrderModal } from '../../services/slices/orderSlice'
 
 
 export const BurgerConstructor: FC = () => {
@@ -12,18 +11,15 @@ export const BurgerConstructor: FC = () => {
 
   const dispatch = useDispatch<AppDispatch>();
 
-  // Получаем данные из стейта слайса
   const {
     bun,
     ingredients,
-    orderRequest,
-    orderSuccess,
-    orderError,
-    orderModalData,
-    price,
+   price,
   } = useSelector((state: RootState) => state.constructor);
 
-  // Рассчитывать цену дополнительно не нужно, т.к. она считается уже в слайсе, но если надо — можем воспользоваться price из стора
+ //const constructorItems = useSelector((state: RootState) => state.constructor);
+  const {orderModalData, orderRequest} = useSelector((state: RootState) => state.order);
+ 
 
   // Обработчик клика по кнопке "Оформить заказ"
   const onOrderClick = () => {
@@ -35,6 +31,8 @@ export const BurgerConstructor: FC = () => {
 
     // Собираем массив _id для передачи в createOrder
     // Согласно API булка добавляется дважды — в начале и в конце
+    // 
+    
     const ingredientsIds = [
 
       bun._id,
@@ -43,9 +41,13 @@ export const BurgerConstructor: FC = () => {
     ];
 
     dispatch(createOrder(ingredientsIds));
-  };
+  }; 
 
-  // Закрыть модалку с заказом (вызывать при закрытии модального окна)
+  const constructorItems = [
+    ...(bun ? [bun] : []),
+    ...(ingredients ?? []),
+  ];
+  
   const onCloseModal = () => {
     dispatch(closeOrderModal());
   };
@@ -53,47 +55,18 @@ export const BurgerConstructor: FC = () => {
     <BurgerConstructorUI
       price={price}
       orderRequest={orderRequest}
-      //constructorItems={constructorItems}
-      constructorItems={{ bun, ingredients }}
+      constructorItems={constructorItems}
+      //constructorItems={{ bun, ingredients }}
       orderModalData={orderModalData}
       onOrderClick={onOrderClick}
       closeOrderModal={closeOrderModal}
     />
   );
 };
-  //const constructorState = useSelector((state: RootState) => state.constructor);
-  //const orderState = useSelector((state: RootState) => state.order);
 
-  // Формируем constructorItems
-  /*
-  const constructorItems = {
-    bun: constructorState.bun,
-    ingredients: constructorState.fillings,
-  };
-*/
-  // orderRequest — загрузка заказа
-  //const orderRequest = orderState.loading;
 
-  // orderModalData — детали заказа
-  //const orderModalData = orderState.orderDetails;
- // const constructorState = useSelector((state: RootState) => state.constructor);
-  //const orderState = useSelector((state: RootState) => state.order);
-/*
-  const constructorItems = {
-    bun: constructorState.bun,
-    ingredients: constructorState.fillings,
-  };
-
-  const orderRequest = orderState.loading;
-  const orderModalData = orderState.orderDetails;    
-  /*
-  const constructorItems = useSelector((state: RootState) => ({
-    bun: state.constructor.bun,
-    ingredients: state.constructor.fillings
-  }));
-  */
- // const orderRequest = useSelector((state: RootState) => state.order.loading);
-  //const orderModalData = useSelector((state: RootState) => state.order.modalData);
+  
+ 
   /*
   const constructorItems = {
     bun: {

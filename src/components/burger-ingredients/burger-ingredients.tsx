@@ -4,18 +4,12 @@ import { TIngredient } from '@utils-types';
 import { TTabMode } from '@utils-types';
 import { BurgerIngredientsUI } from '../ui/burger-ingredients';
 import { useDispatch, useSelector} from 'react-redux';
-import { fetchIngredients} from '../../services/slices/ingredientsSlice';
+//import { fetchIngredients} from '../../services/slices/ingredientsSlice';
 import { RootState, AppDispatch } from 'src/services/store';
 //import { addBun, addIngredient } from '../../services/slices/constructorSlice';
 
 
 export const BurgerIngredients: FC = () => {
-  
-  const dispatch = useDispatch<AppDispatch>();
-  useEffect(() => {
-    dispatch(fetchIngredients());
-  }, [dispatch]);
-
 
   const ingredients = useSelector(
     (state: RootState) => state.ingredients.data
@@ -39,16 +33,8 @@ export const BurgerIngredients: FC = () => {
     dispatch(addIngredient(ingredient));
   };
 */
-  //выбранные ингредиенты для конструктора
-  /** TODO: взять переменные из стора */
-  //const buns = [];
-  //const mains = [];
-  //const sauces = [];
-  // const buns: TIngredient[] = [];
-  // const mains: TIngredient[] = [];
-  // const sauces: TIngredient[] = [];
 
-  const [currentTab, setCurrentTab] = useState<TTabMode>('bun');
+ const [currentTab, setCurrentTab] = useState<TTabMode>('bun');
   const titleBunRef = useRef<HTMLHeadingElement>(null);
   const titleMainRef = useRef<HTMLHeadingElement>(null);
   const titleSaucesRef = useRef<HTMLHeadingElement>(null);

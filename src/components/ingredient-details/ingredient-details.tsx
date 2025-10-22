@@ -4,15 +4,11 @@ import { IngredientDetailsUI } from '../ui/ingredient-details';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from 'src/services/store';
 import { useParams } from 'react-router-dom';
-import {
-  setSelectedIngredient,
-  clearSelectedIngredient,
-  fetchIngredients
-} from '../../services/slices/ingredientsSlice';
+import { setSelectedIngredient } from '../../services/slices/ingredientsSlice';
 
 export const IngredientDetails: FC = () => {
   const { _id } = useParams<{ _id: string }>();
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch();
 
   const ingredients = useSelector((state: RootState) => state.ingredients.data);
   const isLoading = useSelector(
@@ -21,12 +17,6 @@ export const IngredientDetails: FC = () => {
   const selectedIngredient = useSelector(
     (state: RootState) => state.ingredients.selectedIngredient
   );
-
-  useEffect(() => {
-    if (!ingredients.length) {
-      dispatch(fetchIngredients());
-    }
-  }, [dispatch, ingredients.length]);
 
   useEffect(() => {
     if (ingredients.length && _id) {

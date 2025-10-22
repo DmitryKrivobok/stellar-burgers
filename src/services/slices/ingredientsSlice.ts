@@ -23,9 +23,8 @@ export const fetchIngredients = createAsyncThunk<
 >('ingredients/fetch', async (_, thunkAPI) => {
   try {
     const response = await getIngredientsApi(); 
-    console.log('API response:', response);
-    // Используем API, который возвращает массив ингредиентов
-    return response; // Предполагается, что getIngredientsApi возвращает TIngredient[]
+    //console.log('API response:', response);
+    return response; 
   } catch (error) {
    // return thunkAPI.rejectWithValue('Не удалось загрузить ингредиенты');
    const errorMessage = error instanceof Error ? error.message : 'Не удалось загрузить ингредиенты';
@@ -43,7 +42,6 @@ const ingredientsSlice = createSlice({
     clearSelectedIngredient(state) {
       state.selectedIngredient = null;
     },
-    // дополнительные синхронные редьюсеры при необходимости
   },
   extraReducers: (builder) => {
     builder

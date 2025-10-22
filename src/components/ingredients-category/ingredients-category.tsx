@@ -2,8 +2,8 @@ import { forwardRef, useMemo } from 'react';
 import { TIngredientsCategoryProps } from './type';
 import { TIngredient } from '@utils-types';
 import { IngredientsCategoryUI } from '../ui/ingredients-category';
-//import { useSelector, useDispatch} from 'react-redux';
-//import { AppDispatch, RootState } from 'src/services/store';
+import { useSelector, useDispatch} from 'react-redux';
+import { AppDispatch, RootState } from 'src/services/store';
 
 
 
@@ -11,9 +11,9 @@ export const IngredientsCategory = forwardRef<
   HTMLUListElement,
   TIngredientsCategoryProps
 >(({ title, titleRef, ingredients }, ref) => {
- // const dispatch = useDispatch();
+  //const dispatch = useDispatch<AppDispatch>();
 
-// const burgerConstructor = useSelector((state: RootState) => state.constructor);
+//const burgerConstructor = useSelector((state: RootState) => state.constructor);
   //взять переменнуюиз стора burgerConstructor
   
   const burgerConstructor = {
