@@ -5,6 +5,8 @@ import { resetPasswordApi } from '@api';
 import { ResetPasswordUI } from '@ui-pages';
 
 export const ResetPassword: FC = () => {
+  //const dispatch = useDispatch();
+  //dispatch(resetPassword({ password, token }))
   const navigate = useNavigate();
   const [password, setPassword] = useState('');
   const [token, setToken] = useState('');

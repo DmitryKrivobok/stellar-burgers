@@ -17,16 +17,14 @@ const initialState: IIngredientsState = {
 };
 
 export const fetchIngredients = createAsyncThunk<
-  TIngredient[], // Тип возвращаемых данных
-  void, // Тип аргумента
-  { rejectValue: string } // Тип rejected
+  TIngredient[],
+  void,
+  { rejectValue: string } 
 >('ingredients/fetch', async (_, thunkAPI) => {
   try {
     const response = await getIngredientsApi(); 
-    //console.log('API response:', response);
     return response; 
   } catch (error) {
-   // return thunkAPI.rejectWithValue('Не удалось загрузить ингредиенты');
    const errorMessage = error instanceof Error ? error.message : 'Не удалось загрузить ингредиенты';
   return thunkAPI.rejectWithValue(errorMessage);
   }

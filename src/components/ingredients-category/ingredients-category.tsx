@@ -11,18 +11,18 @@ export const IngredientsCategory = forwardRef<
   HTMLUListElement,
   TIngredientsCategoryProps
 >(({ title, titleRef, ingredients }, ref) => {
-  //const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch<AppDispatch>();
 
-//const burgerConstructor = useSelector((state: RootState) => state.constructor);
+const burgerConstructor = useSelector((state: RootState) => state.burgerConstructor);
   //взять переменнуюиз стора burgerConstructor
-  
+  /*
   const burgerConstructor = {
     bun: {
       _id: ''
     },
     ingredients: []
   };
-  
+  */
 
   const ingredientsCounters = useMemo(() => {
     const { bun, ingredients } = burgerConstructor;

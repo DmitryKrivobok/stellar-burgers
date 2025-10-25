@@ -2,9 +2,12 @@ import { FC, useMemo } from 'react';
 import { Preloader } from '../ui/preloader';
 import { OrderInfoUI } from '../ui/order-info';
 import { TIngredient } from '@utils-types';
+import { useSelector } from 'react-redux';
+import { RootState } from 'src/services/store';
 
 export const OrderInfo: FC = () => {
   /** TODO: взять переменные orderData и ingredients из стора */
+  /*
   const orderData = {
     createdAt: '',
     ingredients: [],
@@ -13,9 +16,10 @@ export const OrderInfo: FC = () => {
     name: '',
     updatedAt: 'string',
     number: 0
-  };
-
-  const ingredients: TIngredient[] = [];
+  };*/
+  const orderData = useSelector((state: RootState) => state.order.orderModalData);
+  const ingredients = useSelector((state: RootState) => state.burgerConstructor.ingredients);
+  //const ingredients: TIngredient[] = [];
 
   /* Готовим данные для отображения */
   const orderInfo = useMemo(() => {
