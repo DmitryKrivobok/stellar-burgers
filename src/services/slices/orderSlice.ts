@@ -40,13 +40,12 @@ const initialState: OrderState = {
 };
 
 export const fetchFeeds = createAsyncThunk<
-  TOrder[],
+  Partial<OrderState>,
   void,
   { rejectValue: string }
 >('order/fetchFeeds', async (_, thunkAPI) => {
   try {
-    const data = await getFeedsApi();
-    return data.orders;
+    return await getFeedsApi();
   } catch (err) {
     return thunkAPI.rejectWithValue((err as Error).message);
   }
@@ -59,7 +58,7 @@ export const fetchOrders = createAsyncThunk<
 >('order/fetchOrders', async (_, thunkAPI) => {
   try {
     const orders = await getOrdersApi();
-    return orders; // здесь точно ТOrder[]
+    return orders;
   } catch (err) {
     return thunkAPI.rejectWithValue((err as Error).message);
   }
@@ -132,7 +131,9 @@ const orderSlice = createSlice({
       .addCase(fetchFeeds.fulfilled, (state, action) => {
         console.log('Полученые заказы:', action.payload);
         state.loading = false;
-        state.orders = action.payload;
+        state.orders = action.payload.orders || [];
+        state.total = action.payload.total || 0;
+        state.totalToday = action.payload.totalToday || 0;
       })
       .addCase(fetchFeeds.rejected, (state, action) => {
         state.loading = false;
@@ -153,6 +154,7 @@ const orderSlice = createSlice({
         state.error = action.payload || 'Ошибка при получении заказов';
       });
     //placeOrder
+    /*
     builder
       .addCase(placeOrder.pending, (state) => {
         state.placingOrder = true;
@@ -171,7 +173,7 @@ const orderSlice = createSlice({
       .addCase(placeOrder.rejected, (state, action) => {
         state.placingOrder = false;
         state.placeOrderError = action.payload || 'Ошибка оформления заказа';
-      });
+      });*/
     //createOrder
     builder
       .addCase(createOrder.pending, (state) => {

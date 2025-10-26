@@ -3,7 +3,7 @@ import { TOrder } from '@utils-types';
 import { FC } from 'react';
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState, AppDispatch} from '../../services/store';
+import { RootState, AppDispatch } from '../../services/store';
 import { fetchOrders } from '../../services/slices/orderSlice';
 
 export const ProfileOrders: FC = () => {
@@ -11,11 +11,13 @@ export const ProfileOrders: FC = () => {
   /** TODO: взять переменную из стора */
   //const orders: TOrder[] = [];
 
-  const orders: TOrder[] = useSelector((state: RootState) => state.order.orders);
+  const orders: TOrder[] = useSelector(
+    (state: RootState) => state.order.orders
+  );
 
   useEffect(() => {
     dispatch(fetchOrders());
-  }, [dispatch]);
-
+  }, []);
+  //дистпатч выше
   return <ProfileOrdersUI orders={orders} />;
 };

@@ -14,7 +14,7 @@ export const OrderCard: FC<OrderCardProps> = memo(({ order }) => {
 
   /** TODO: взять переменную из стора */
   //const ingredients: TIngredient[] = [];
-  const ingredients = useSelector((state: RootState) => state.burgerConstructor.ingredients);
+  const ingredients = useSelector((state: RootState) => state.ingredients.data);
 
   const orderInfo = useMemo(() => {
     if (!ingredients.length) return null;
@@ -28,16 +28,6 @@ export const OrderCard: FC<OrderCardProps> = memo(({ order }) => {
       []
     );
 
-/*
-const ingredientsInfo = (order.ingredients || []).reduce(
-  (acc: TIngredient[], item: string) => {
-    const ingredient = ingredients.find((ing) => ing._id === item);
-    if (ingredient) return [...acc, ingredient];
-    return acc;
-  },
-  []
-);
-*/
     const total = ingredientsInfo.reduce((acc, item) => acc + item.price, 0);
 
     const ingredientsToShow = ingredientsInfo.slice(0, maxIngredients);

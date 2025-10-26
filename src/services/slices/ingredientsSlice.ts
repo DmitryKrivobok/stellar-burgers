@@ -6,27 +6,30 @@ interface IIngredientsState {
   data: TIngredient[];
   isLoading: boolean;
   error: string | null;
- selectedIngredient: TIngredient | null;
+  selectedIngredient: TIngredient | null;
 }
 
 const initialState: IIngredientsState = {
   data: [],
   isLoading: false,
   error: null,
-  selectedIngredient: null,
+  selectedIngredient: null
 };
 
 export const fetchIngredients = createAsyncThunk<
   TIngredient[],
   void,
-  { rejectValue: string } 
+  { rejectValue: string }
 >('ingredients/fetch', async (_, thunkAPI) => {
   try {
-    const response = await getIngredientsApi(); 
-    return response; 
+    const response = await getIngredientsApi();
+    return response;
   } catch (error) {
-   const errorMessage = error instanceof Error ? error.message : 'Не удалось загрузить ингредиенты';
-  return thunkAPI.rejectWithValue(errorMessage);
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : 'Не удалось загрузить ингредиенты';
+    return thunkAPI.rejectWithValue(errorMessage);
   }
 });
 
@@ -39,7 +42,7 @@ const ingredientsSlice = createSlice({
     },
     clearSelectedIngredient(state) {
       state.selectedIngredient = null;
-    },
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -58,7 +61,7 @@ const ingredientsSlice = createSlice({
   }
 });
 
-export const { setSelectedIngredient, clearSelectedIngredient } = ingredientsSlice.actions;
+export const { setSelectedIngredient, clearSelectedIngredient } =
+  ingredientsSlice.actions;
 
 export default ingredientsSlice.reducer;
-

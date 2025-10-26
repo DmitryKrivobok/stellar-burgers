@@ -5,7 +5,6 @@ import { AppDispatch } from '../../services/store';
 import { useDispatch } from 'react-redux';
 
 export const Login: FC = () => {
-  
   const dispatch = useDispatch<AppDispatch>();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

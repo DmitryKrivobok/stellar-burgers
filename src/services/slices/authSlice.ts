@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { TUser } from '@utils-types';
-
+import { storeTokens } from '../../utils/cookie';
 
 import {
   getUserApi,
@@ -9,26 +9,26 @@ import {
   loginUserApi,
   forgotPasswordApi,
   resetPasswordApi,
-  logoutApi
+  logoutApi,
+  TLoginData,
+  refreshToken
 } from '../../utils/burger-api';
-
 
 interface AuthState {
   user: TUser;
   isLoading: boolean;
   error: string | null;
-  authChecked: boolean; 
+  authChecked: boolean;
 }
-
 
 const initialState: AuthState = {
   user: {
     name: '',
-    email: '',
+    email: ''
   },
   isLoading: false,
   error: null,
-  authChecked: false,
+  authChecked: false
 };
 
 // Регистрация
@@ -41,21 +41,57 @@ export const registerUser = createAsyncThunk(
 );
 
 // Вход
+/*
 export const loginUser = createAsyncThunk(
-  'auth/login',
-  async (data: { email: string; password: string }, thunkAPI) => {
-    const response = await loginUserApi(data);
-    return response;
+  'user/login',
+  async (data: { email: string; password: string }, thunkAPI)=> {
+    try {
+      const res = await loginUserApi(data);
+      const { user, refreshToken, accessToken } = res;
+
+      storeTokens(refreshToken, accessToken);
+
+      return user;
+    } catch (error) {
+      return thunkAPI.rejectWithValue('Login failed');
+    }
+  }
+);*/
+
+export const loginUser = createAsyncThunk<TUser, TLoginData>(
+  'user/login',
+  async (data, thunkAPI) => {
+    const res = await loginUserApi(data);
+    if (!res.success) {
+      return thunkAPI.rejectWithValue('Login failed');
+    }
+    const { user, refreshToken, accessToken } = res;
+    storeTokens(refreshToken, accessToken);
+    return user;
   }
 );
 
-// Получение данных пользователя
-export const fetchUser = createAsyncThunk('auth/fetchUser', async (_, thunkAPI) => {
+// Получение данных пользователя  async (_, thunkAPI)
+/*
+export const fetchUser = createAsyncThunk('user/fetch', async (_, thunkAPI) => {
   try {
-    const response = await getUserApi();
-    return response.user;
+    const data = await getUserApi();
+    return data.user; // возвращаем только пользователя
   } catch (error) {
-    return thunkAPI.rejectWithValue('Не удалось получить данные пользователя');
+    // можно дополнительно обработать ошибок или оставить так
+    return thunkAPI.rejectWithValue(error);
+  }
+});*/
+
+export const fetchUser = createAsyncThunk('user/fetch', async (_, thunkAPI) => {
+  try {
+    const data = await getUserApi();
+    return data.user;
+  } catch (error) {
+
+    await refreshToken();
+    
+    return thunkAPI.rejectWithValue(error);
   }
 });
 
@@ -89,15 +125,13 @@ export const logout = createAsyncThunk('auth/logout', async () => {
   await logoutApi();
 });
 
-// Создаем слайс
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    // Можно добавить синхронные редьюсеры
     clearError: (state) => {
       state.error = null;
-    },
+    }
   },
   extraReducers: (builder) => {
     // Обработка регистрации
@@ -122,8 +156,9 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
+        console.log('слайс логин', action.payload);
         state.isLoading = false;
-        state.user = action.payload.user;
+        state.user = action.payload;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;
@@ -137,6 +172,7 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchUser.fulfilled, (state, action) => {
+        console.log('юзер после логина', action.payload);
         state.isLoading = false;
         state.user = action.payload;
         state.authChecked = true;
@@ -145,9 +181,9 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.user = {
           name: '',
-          email: '',
+          email: ''
         };
-        state.authChecked = true; // завершена проверка, и пользователь не авторизован
+        state.authChecked = false;
       });
 
     // Обработка обновления пользователя
@@ -204,14 +240,14 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.user = {
           name: '',
-          email: '',
+          email: ''
         };
       })
       .addCase(logout.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.error.message ?? 'Ошибка выхода';
       });
-  },
+  }
 });
 
 export const { clearError } = authSlice.actions;

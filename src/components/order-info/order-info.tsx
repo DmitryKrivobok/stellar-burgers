@@ -17,8 +17,12 @@ export const OrderInfo: FC = () => {
     updatedAt: 'string',
     number: 0
   };*/
-  const orderData = useSelector((state: RootState) => state.order.orderModalData);
-  const ingredients = useSelector((state: RootState) => state.burgerConstructor.ingredients);
+  const orderData = useSelector(
+    (state: RootState) => state.order.orderModalData
+  );
+  const ingredients = useSelector(
+    (state: RootState) => state.burgerConstructor.ingredients
+  );
   //const ingredients: TIngredient[] = [];
 
   /* Готовим данные для отображения */

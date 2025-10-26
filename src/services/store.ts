@@ -14,7 +14,7 @@ export const rootReducer = combineReducers({
   ingredients: ingredientsSlice,
   burgerConstructor: constructorSlice,
   order: orderSlice,
-  auth: authSlice,
+  auth: authSlice
 });
 
 const store = configureStore({

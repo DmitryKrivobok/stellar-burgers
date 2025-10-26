@@ -45,3 +45,53 @@ export function setCookie(
 export function deleteCookie(name: string) {
   setCookie(name, '', { expires: -1 });
 }
+
+export const storeTokens = (refreshToken: string, accessToken: string) => {
+  localStorage.setItem('refreshToken', refreshToken);
+  setCookie('accessToken', accessToken);
+};
+
+export const resetTokens = () => {
+  localStorage.removeItem('refreshToken');
+  deleteCookie('accessToken');
+};
+
+// Функции управления токенами (accessToken в Cookie, refreshToken в localStorage)
+
+export const tokenStorage = {
+  // Сохраняем accessToken в cookie
+  saveAccessToken: (token: string): void => {
+    setCookie('accessToken', token, { expires: 3600 }); // например, на 1 час
+  },
+
+  // Получаем accessToken из cookie
+  getAccessToken: (): string | undefined => {
+    return getCookie('accessToken');
+  },
+
+  // Удаляем accessToken из cookie
+  deleteAccessToken: (): void => {
+    setCookie('accessToken', '', { expires: -1 });
+  },
+
+  // Сохраняем refreshToken в localStorage
+  saveRefreshToken: (token: string): void => {
+    localStorage.setItem('refreshToken', token);
+  },
+
+  // Получаем refreshToken из localStorage
+  getRefreshToken: (): string | null => {
+    return localStorage.getItem('refreshToken');
+  },
+
+  // Удаляем refreshToken из localStorage
+  deleteRefreshToken: (): void => {
+    localStorage.removeItem('refreshToken');
+  },
+
+  // Обновление всех токенов (например, при logout)
+  clearTokens: (): void => {
+    tokenStorage.deleteAccessToken();
+    tokenStorage.deleteRefreshToken();
+  }
+};

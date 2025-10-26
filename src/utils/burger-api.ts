@@ -1,4 +1,4 @@
-import { setCookie, getCookie } from './cookie';
+import { setCookie, getCookie, tokenStorage } from './cookie';
 import { TIngredient, TOrder, TOrdersData, TUser } from './types';
 
 const URL = process.env.BURGER_API_URL;
@@ -14,6 +14,67 @@ type TRefreshResponse = TServerResponse<{
   refreshToken: string;
   accessToken: string;
 }>;
+/*
+
+// Обновление токенов
+export const refreshToken = (): Promise<TRefreshResponse> =>
+  fetch(`${URL}/auth/token`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json;charset=utf-8'
+    },
+    body: JSON.stringify({
+      token: tokenStorage.getRefreshToken() // получаем refreshToken из storage
+    })
+  })
+    .then((res) => checkResponse<TRefreshResponse>(res))
+    .then((data) => {
+      if (!data.success) {
+        return Promise.reject(data);
+      }
+      // Сохраняем новые токены через вспомогательные функции
+      tokenStorage.saveRefreshToken(data.refreshToken);
+      tokenStorage.saveAccessToken(data.accessToken);
+      return data;
+    });
+
+// API вызов с автоматической обработкой
+export const fetchWithRefresh = async <T>(
+  url: RequestInfo,
+  options: RequestInit = {}
+): Promise<T> => {
+  const token = tokenStorage.getAccessToken();
+  if (token) {
+    options.headers = {
+      ...options.headers,
+      'Authorization': token,
+    };
+  }
+
+  try {
+    const res = await fetch(url, options);
+    return await checkResponse<T>(res);
+  } catch (err) {
+    if ((err as { message: string }).message === 'jwt expired') {
+      // Обновление токенов при просрочке
+      const refreshData = await refreshToken();
+
+      // Обновление токенов в storage
+      tokenStorage.saveAccessToken(refreshData.accessToken);
+      tokenStorage.saveRefreshToken(refreshData.refreshToken);
+
+      // Обновляем заголовки и повторяем запрос
+      if (options.headers) {
+        (options.headers as { [key: string]: string }).authorization = refreshData.accessToken;
+      }
+      const res = await fetch(url, options);
+      return await checkResponse<T>(res);
+    } else {
+      return Promise.reject(err);
+    }
+  }
+};
+*/
 
 export const refreshToken = (): Promise<TRefreshResponse> =>
   fetch(`${URL}/auth/token`, {

@@ -6,5 +6,5 @@ export type TIngredientsCategoryUIProps = {
   ingredients: TIngredient[];
   ingredientsCounters: Record<string, number>;
   //onSelectBun: (ingredient: TIngredient) => void;
- // onSelectIngredient: (ingredient: TIngredient) => void;
+  // onSelectIngredient: (ingredient: TIngredient) => void;
 };
