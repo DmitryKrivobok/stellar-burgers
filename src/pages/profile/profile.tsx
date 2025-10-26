@@ -8,19 +8,11 @@ import { updateUser, fetchUser } from '../../services/slices/authSlice';
 
 export const Profile: FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  /** TODO: взять переменную из стора */
-  /*
-  const user = {
-    name: '',
-    email: ''
-  };*/
 
   const user = useSelector((state: RootState) => state.auth.user);
   useEffect(() => {
     dispatch(fetchUser());
-  }, [dispatch]);
-
-  console.log('есть юзер', user);
+  }, []);
 
   const [formValue, setFormValue] = useState({
     name: user.name,
@@ -71,6 +63,4 @@ export const Profile: FC = () => {
       handleInputChange={handleInputChange}
     />
   );
-
-  ///return null;
 };

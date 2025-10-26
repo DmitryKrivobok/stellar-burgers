@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { TUser } from '@utils-types';
-import { storeTokens } from '../../utils/cookie';
+import { storeTokens, resetTokens } from '../../utils/cookie';
 
 import {
   getUserApi,
@@ -10,8 +10,7 @@ import {
   forgotPasswordApi,
   resetPasswordApi,
   logoutApi,
-  TLoginData,
-  refreshToken
+  TLoginData
 } from '../../utils/burger-api';
 
 interface AuthState {
@@ -31,7 +30,6 @@ const initialState: AuthState = {
   authChecked: false
 };
 
-// Регистрация
 export const registerUser = createAsyncThunk(
   'auth/register',
   async (data: { email: string; password: string; name: string }, thunkAPI) => {
@@ -39,24 +37,6 @@ export const registerUser = createAsyncThunk(
     return response;
   }
 );
-
-// Вход
-/*
-export const loginUser = createAsyncThunk(
-  'user/login',
-  async (data: { email: string; password: string }, thunkAPI)=> {
-    try {
-      const res = await loginUserApi(data);
-      const { user, refreshToken, accessToken } = res;
-
-      storeTokens(refreshToken, accessToken);
-
-      return user;
-    } catch (error) {
-      return thunkAPI.rejectWithValue('Login failed');
-    }
-  }
-);*/
 
 export const loginUser = createAsyncThunk<TUser, TLoginData>(
   'user/login',
@@ -71,31 +51,15 @@ export const loginUser = createAsyncThunk<TUser, TLoginData>(
   }
 );
 
-// Получение данных пользователя  async (_, thunkAPI)
-/*
-export const fetchUser = createAsyncThunk('user/fetch', async (_, thunkAPI) => {
-  try {
-    const data = await getUserApi();
-    return data.user; // возвращаем только пользователя
-  } catch (error) {
-    // можно дополнительно обработать ошибок или оставить так
-    return thunkAPI.rejectWithValue(error);
-  }
-});*/
-
 export const fetchUser = createAsyncThunk('user/fetch', async (_, thunkAPI) => {
   try {
     const data = await getUserApi();
     return data.user;
   } catch (error) {
-
-    await refreshToken();
-    
     return thunkAPI.rejectWithValue(error);
   }
 });
 
-// Обновление пользователя
 export const updateUser = createAsyncThunk(
   'auth/updateUser',
   async (userData: Partial<TUser>, thunkAPI) => {
@@ -104,7 +68,6 @@ export const updateUser = createAsyncThunk(
   }
 );
 
-// Забыл пароль
 export const forgotPassword = createAsyncThunk(
   'auth/forgotPassword',
   async (data: { email: string }) => {
@@ -112,7 +75,6 @@ export const forgotPassword = createAsyncThunk(
   }
 );
 
-// Сброс пароля
 export const resetPassword = createAsyncThunk(
   'auth/resetPassword',
   async (data: { password: string; token: string }) => {
@@ -120,9 +82,9 @@ export const resetPassword = createAsyncThunk(
   }
 );
 
-// Выход
 export const logout = createAsyncThunk('auth/logout', async () => {
   await logoutApi();
+  resetTokens();
 });
 
 const authSlice = createSlice({
@@ -134,7 +96,6 @@ const authSlice = createSlice({
     }
   },
   extraReducers: (builder) => {
-    // Обработка регистрации
     builder
       .addCase(registerUser.pending, (state) => {
         state.isLoading = true;
@@ -149,30 +110,27 @@ const authSlice = createSlice({
         state.error = action.error.message ?? 'Ошибка регистрации';
       });
 
-    // Обработка входа
     builder
       .addCase(loginUser.pending, (state) => {
         state.isLoading = true;
         state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
-        console.log('слайс логин', action.payload);
         state.isLoading = false;
         state.user = action.payload;
+        state.authChecked = true;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.error.message ?? 'Ошибка входа';
       });
 
-    // Обработка получения данных пользователя
     builder
       .addCase(fetchUser.pending, (state) => {
         state.isLoading = true;
         state.error = null;
       })
       .addCase(fetchUser.fulfilled, (state, action) => {
-        console.log('юзер после логина', action.payload);
         state.isLoading = false;
         state.user = action.payload;
         state.authChecked = true;
@@ -183,10 +141,9 @@ const authSlice = createSlice({
           name: '',
           email: ''
         };
-        state.authChecked = false;
+        state.authChecked = true;
       });
 
-    // Обработка обновления пользователя
     builder
       .addCase(updateUser.pending, (state) => {
         state.isLoading = true;
@@ -203,7 +160,6 @@ const authSlice = createSlice({
         state.error = action.error.message ?? 'Ошибка обновления';
       });
 
-    // Обработка сброса пароля / восстановления
     builder
       .addCase(forgotPassword.pending, (state) => {
         state.isLoading = true;
@@ -230,7 +186,6 @@ const authSlice = createSlice({
         state.error = action.error.message ?? 'Ошибка при сбросе пароля';
       });
 
-    // Выход
     builder
       .addCase(logout.pending, (state) => {
         state.isLoading = true;

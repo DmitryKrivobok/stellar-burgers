@@ -8,8 +8,6 @@ import { fetchOrders } from '../../services/slices/orderSlice';
 
 export const ProfileOrders: FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  /** TODO: взять переменную из стора */
-  //const orders: TOrder[] = [];
 
   const orders: TOrder[] = useSelector(
     (state: RootState) => state.order.orders
@@ -18,6 +16,6 @@ export const ProfileOrders: FC = () => {
   useEffect(() => {
     dispatch(fetchOrders());
   }, []);
-  //дистпатч выше
+
   return <ProfileOrdersUI orders={orders} />;
 };

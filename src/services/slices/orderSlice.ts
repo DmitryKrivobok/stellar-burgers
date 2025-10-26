@@ -16,9 +16,7 @@ interface OrderState {
   placingOrder: boolean;
   placeOrderError: string | null;
   orderNumber?: number;
-  // Здесь основной объект текущего заказа
   orderModalData: TOrder | null;
-  // Для статуса заказа
   orderRequest: boolean;
   orderSuccess: boolean;
   orderError: string | null;
@@ -79,19 +77,6 @@ export const createOrder = createAsyncThunk<
   }
 });
 
-export const placeOrder = createAsyncThunk<
-  { order: TOrder }, // ответ с заказом
-  string[], // массив id ингредиентов
-  { rejectValue: string }
->('order/placeOrder', async (ingredientIds, thunkAPI) => {
-  try {
-    const response = await orderBurgerApi(ingredientIds);
-    return { order: response.order };
-  } catch (err) {
-    return thunkAPI.rejectWithValue((err as Error).message);
-  }
-});
-
 export const fetchOrderByNumber = createAsyncThunk<
   TOrder,
   number,
@@ -129,7 +114,6 @@ const orderSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchFeeds.fulfilled, (state, action) => {
-        console.log('Полученые заказы:', action.payload);
         state.loading = false;
         state.orders = action.payload.orders || [];
         state.total = action.payload.total || 0;
@@ -153,27 +137,6 @@ const orderSlice = createSlice({
         state.loading = false;
         state.error = action.payload || 'Ошибка при получении заказов';
       });
-    //placeOrder
-    /*
-    builder
-      .addCase(placeOrder.pending, (state) => {
-        state.placingOrder = true;
-        state.placeOrderError = null;
-      })
-      .addCase(
-        placeOrder.fulfilled,
-        (state, action: PayloadAction<{ order: TOrder }>) => {
-          console.log('Полученый заказ:', action.payload);
-          state.placingOrder = false;
-          state.orders = [...state.orders, action.payload.order];
-          //state.orders.push(action.payload.order);
-          state.orderNumber = action.payload.order.number;
-        }
-      )
-      .addCase(placeOrder.rejected, (state, action) => {
-        state.placingOrder = false;
-        state.placeOrderError = action.payload || 'Ошибка оформления заказа';
-      });*/
     //createOrder
     builder
       .addCase(createOrder.pending, (state) => {
@@ -184,7 +147,6 @@ const orderSlice = createSlice({
       .addCase(
         createOrder.fulfilled,
         (state, action: PayloadAction<TOrder>) => {
-          console.log('Полученый заказ:', action.payload);
           state.orderModalData = action.payload;
           state.orders = [...state.orders, action.payload];
           state.orderRequest = false;

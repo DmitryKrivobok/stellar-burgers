@@ -14,15 +14,6 @@ export const IngredientsCategory = forwardRef<
   const burgerConstructor = useSelector(
     (state: RootState) => state.burgerConstructor
   );
-  //взять переменнуюиз стора burgerConstructor
-  /*
-  const burgerConstructor = {
-    bun: {
-      _id: ''
-    },
-    ingredients: []
-  };
-  */
 
   const ingredientsCounters = useMemo(() => {
     const { bun, ingredients } = burgerConstructor;
