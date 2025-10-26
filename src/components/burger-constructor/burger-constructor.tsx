@@ -1,24 +1,52 @@
 import { FC, useMemo } from 'react';
 import { TConstructorIngredient } from '@utils-types';
 import { BurgerConstructorUI } from '@ui';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState, AppDispatch } from 'src/services/store';
+import { createOrder, closeOrderModal } from '../../services/slices/orderSlice';
+import { clearConstructor } from '../../services/slices/constructorSlice';
+import { useNavigate } from 'react-router-dom';
 
 export const BurgerConstructor: FC = () => {
-  /** TODO: взять переменные constructorItems, orderRequest и orderModalData из стора */
-  const constructorItems = {
-    bun: {
-      price: 0
-    },
-    ingredients: []
-  };
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+  const user = useSelector((state: RootState) => state.auth.user);
 
-  const orderRequest = false;
-
-  const orderModalData = null;
+  const { bun, ingredients } = useSelector(
+    (state: RootState) => state.burgerConstructor
+  );
+  const { orderModalData, orderRequest } = useSelector(
+    (state: RootState) => state.order
+  );
 
   const onOrderClick = () => {
-    if (!constructorItems.bun || orderRequest) return;
+    if (!user || !user.email) {
+      navigate('/login', { state: { from: location.pathname } });
+      return;
+    }
+
+    if (!bun) {
+      alert('Добавьте булку!');
+      return;
+    }
+    if (orderRequest) return;
+    const ingredientsIds = [
+      bun._id,
+      ...ingredients.map((item) => item._id),
+      bun._id
+    ];
+    dispatch(createOrder(ingredientsIds));
+    dispatch(clearConstructor());
   };
-  const closeOrderModal = () => {};
+
+  const constructorItems = {
+    bun,
+    ingredients
+  };
+
+  const handleCloseModal = () => {
+    dispatch(closeOrderModal());
+  };
 
   const price = useMemo(
     () =>
@@ -30,8 +58,6 @@ export const BurgerConstructor: FC = () => {
     [constructorItems]
   );
 
-  return null;
-
   return (
     <BurgerConstructorUI
       price={price}
@@ -39,7 +65,7 @@ export const BurgerConstructor: FC = () => {
       constructorItems={constructorItems}
       orderModalData={orderModalData}
       onOrderClick={onOrderClick}
-      closeOrderModal={closeOrderModal}
+      closeOrderModal={handleCloseModal}
     />
   );
 };
