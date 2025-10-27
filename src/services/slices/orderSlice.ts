@@ -43,9 +43,16 @@ export const fetchFeeds = createAsyncThunk<
   { rejectValue: string }
 >('order/fetchFeeds', async (_, thunkAPI) => {
   try {
-    return await getFeedsApi();
+    const data = await getFeedsApi();
+    return data;
   } catch (err) {
-    return thunkAPI.rejectWithValue((err as Error).message);
+    if (err instanceof Error) {
+      return thunkAPI.rejectWithValue(
+        err.message || 'Ошибка при загрузке данных'
+      );
+    } else {
+      return thunkAPI.rejectWithValue('Ошибка при загрузке данных');
+    }
   }
 });
 
@@ -58,7 +65,13 @@ export const fetchOrders = createAsyncThunk<
     const orders = await getOrdersApi();
     return orders;
   } catch (err) {
-    return thunkAPI.rejectWithValue((err as Error).message);
+    if (err instanceof Error) {
+      return thunkAPI.rejectWithValue(
+        err.message || 'Ошибка при получении заказов'
+      );
+    } else {
+      return thunkAPI.rejectWithValue('Ошибка при получении заказов');
+    }
   }
 });
 
@@ -70,10 +83,14 @@ export const createOrder = createAsyncThunk<
   try {
     const response = await orderBurgerApi(ingredientsIds);
     return response.order;
-  } catch (error: any) {
-    return thunkAPI.rejectWithValue(
-      error.message || 'Ошибка при оформлении заказа'
-    );
+  } catch (err) {
+    if (err instanceof Error) {
+      return thunkAPI.rejectWithValue(
+        err.message || 'Ошибка при оформлении заказа'
+      );
+    } else {
+      return thunkAPI.rejectWithValue('Ошибка при оформлении заказа');
+    }
   }
 });
 
@@ -84,15 +101,14 @@ export const fetchOrderByNumber = createAsyncThunk<
 >('order/fetchOrderByNumber', async (orderNumber, thunkAPI) => {
   try {
     const response = await getOrderByNumberApi(orderNumber);
-
     if (!response?.orders?.length) {
       return thunkAPI.rejectWithValue('Заказ не найден');
     }
     return response.orders[0];
-  } catch (err: any) {
-    return thunkAPI.rejectWithValue(
-      err.message || 'Ошибка при получении заказа'
-    );
+  } catch (err) {
+    const message =
+      err instanceof Error ? err.message : 'Ошибка при получении заказа';
+    return thunkAPI.rejectWithValue(message);
   }
 });
 
@@ -107,7 +123,6 @@ const orderSlice = createSlice({
     }
   },
   extraReducers: (builder) => {
-    //fetchFeeds
     builder
       .addCase(fetchFeeds.pending, (state) => {
         state.loading = true;
@@ -123,7 +138,7 @@ const orderSlice = createSlice({
         state.loading = false;
         state.error = action.payload || 'Ошибка при получении заказов';
       });
-    //fetchOrders
+
     builder
       .addCase(fetchOrders.pending, (state) => {
         state.loading = true;
@@ -137,7 +152,7 @@ const orderSlice = createSlice({
         state.loading = false;
         state.error = action.payload || 'Ошибка при получении заказов';
       });
-    //createOrder
+
     builder
       .addCase(createOrder.pending, (state) => {
         state.orderRequest = true;
@@ -157,7 +172,7 @@ const orderSlice = createSlice({
         state.orderRequest = false;
         state.orderError = action.payload || 'Неизвестная ошибка';
       });
-    //fetchOrderByNumber
+
     builder
       .addCase(fetchOrderByNumber.pending, (state) => {
         state.orderRequest = true;
