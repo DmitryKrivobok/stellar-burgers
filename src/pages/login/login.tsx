@@ -1,22 +1,19 @@
 import { FC, SyntheticEvent, useState } from 'react';
 import { LoginUI } from '@ui-pages';
 import { loginUser } from '../../services/slices/authSlice';
-import { AppDispatch } from '../../services/store';
-import { useDispatch } from 'react-redux';
+import { useDispatch } from '../../services/store';
 import { useNavigate } from 'react-router-dom';
 
-
 export const Login: FC = () => {
-
   const navigate = useNavigate();
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
     dispatch(loginUser({ email, password }));
-    navigate('/profile');
+    navigate('/');
   };
 
   return (

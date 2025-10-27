@@ -2,14 +2,12 @@ import { FC, useMemo, useEffect } from 'react';
 import { Preloader } from '../ui/preloader';
 import { OrderInfoUI } from '../ui/order-info';
 import { TIngredient } from '@utils-types';
-import { RootState } from 'src/services/store';
-import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { fetchOrderByNumber } from '../../services/slices/orderSlice';
-import { AppDispatch } from 'src/services/store';
+import { useDispatch, useSelector, RootState } from '../../services/store';
 
 export const OrderInfo: FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch();
   const { number } = useParams<{ number: string }>();
   useEffect(() => {
     if (number) {
@@ -55,7 +53,7 @@ export const OrderInfo: FC = () => {
       (acc, item) => acc + item.price * item.count,
       0
     );
-    
+
     return {
       ...orderData,
       ingredientsInfo,

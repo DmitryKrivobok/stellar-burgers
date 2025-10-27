@@ -1,6 +1,5 @@
 import { FC } from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from 'src/services/store';
+import { RootState, useSelector } from '../../services/store';
 import { TOrder } from '@utils-types';
 import { FeedInfoUI } from '../ui/feed-info';
 
