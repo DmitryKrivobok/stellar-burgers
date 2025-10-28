@@ -2,14 +2,12 @@ import { forwardRef, useMemo } from 'react';
 import { TIngredientsCategoryProps } from './type';
 import { TIngredient } from '@utils-types';
 import { IngredientsCategoryUI } from '../ui/ingredients-category';
-import { RootState,useSelector, useDispatch } from '../../services/store';
+import { RootState, useSelector } from '../../services/store';
 
 export const IngredientsCategory = forwardRef<
   HTMLUListElement,
   TIngredientsCategoryProps
 >(({ title, titleRef, ingredients }, ref) => {
-  const dispatch = useDispatch();
-
   const burgerConstructor = useSelector(
     (state: RootState) => state.burgerConstructor
   );

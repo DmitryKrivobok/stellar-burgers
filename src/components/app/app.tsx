@@ -2,6 +2,7 @@ import { ConstructorPage } from '@pages';
 import '../../index.css';
 import styles from './app.module.css';
 import React from 'react';
+import { useState } from 'react';
 import { useDispatch, useSelector, RootState } from '../../services/store';
 import { useEffect } from 'react';
 import { fetchIngredients } from '../../services/slices/ingredientsSlice';
@@ -13,7 +14,8 @@ import {
   useLocation,
   useNavigate,
   Outlet,
-  useParams
+  useParams,
+  replace
 } from 'react-router-dom';
 import { AppHeader, Modal, OrderInfo, IngredientDetails } from '@components';
 import {
@@ -43,7 +45,7 @@ const ProtectedRoute = () => {
 };
 
 const PublicRoute = () => {
-  const { user } = useSelector((state: RootState) => state.auth);
+  const user = useSelector((state: RootState) => state.auth.user);
   const location = useLocation();
 
   if (user.email !== '') {
@@ -67,16 +69,24 @@ const App: React.FC = () => {
 
   const state = location.state as { background?: Location };
   const background = state && state.background;
+ // const background = location.state?.background;
 
-  const handleModalClose = () => {
+  const handleCloseModal = () => {
+    if(state?.background) {
+      navigate(-1);
+    }else {
+      navigate('/', { state: { from: replace}});
+    }
+
     navigate(-1);
+    return;
   };
 
   const OrderModalWrapper = () => {
     const { number } = useParams();
 
     return (
-      <Modal title={`#${number}`} onClose={handleModalClose}>
+      <Modal title={`#${number}`} onClose={handleCloseModal}>
         <OrderInfo />
       </Modal>
     );
@@ -86,7 +96,7 @@ const App: React.FC = () => {
     <div className={styles.app}>
       <AppHeader />
 
-      <Routes location={background || location}>
+      <Routes location={state?.background || location}>
         <Route path='/' element={<ConstructorPage />} />
         <Route path='/feed' element={<Feed />} />
 
@@ -111,7 +121,7 @@ const App: React.FC = () => {
           <Route
             path='/ingredients/:_id'
             element={
-              <Modal title='Детали ингредиента' onClose={handleModalClose}>
+              <Modal title='Детали ингредиента' onClose={handleCloseModal}>
                 <IngredientDetails />
               </Modal>
             }

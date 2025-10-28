@@ -162,6 +162,7 @@ const orderSlice = createSlice({
       .addCase(
         createOrder.fulfilled,
         (state, action: PayloadAction<TOrder>) => {
+          console.log('создали заказ', action.payload);
           state.orderModalData = action.payload;
           state.orders = [...state.orders, action.payload];
           state.orderRequest = false;
