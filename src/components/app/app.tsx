@@ -15,7 +15,6 @@ import {
   useNavigate,
   Outlet,
   useParams,
-  replace
 } from 'react-router-dom';
 import { AppHeader, Modal, OrderInfo, IngredientDetails } from '@components';
 import {
@@ -69,17 +68,10 @@ const App: React.FC = () => {
 
   const state = location.state as { background?: Location };
   const background = state && state.background;
- // const background = location.state?.background;
 
   const handleCloseModal = () => {
-    if(state?.background) {
-      navigate(-1);
-    }else {
-      navigate('/', { state: { from: replace}});
-    }
-
     navigate(-1);
-    return;
+    
   };
 
   const OrderModalWrapper = () => {
@@ -96,7 +88,7 @@ const App: React.FC = () => {
     <div className={styles.app}>
       <AppHeader />
 
-      <Routes location={state?.background || location}>
+      <Routes location={background || location}>
         <Route path='/' element={<ConstructorPage />} />
         <Route path='/feed' element={<Feed />} />
 

@@ -1,33 +1,29 @@
-import { FC, useMemo, useEffect } from 'react';
+import { FC, useMemo } from 'react';
 import { TConstructorIngredient } from '@utils-types';
 import { BurgerConstructorUI } from '@ui';
 import { RootState, useDispatch, useSelector } from '../../services/store';
-import { createOrder, closeOrderModal } from '../../services/slices/orderSlice';
+import { createOrder } from '../../services/slices/createOrderSlice';
 import { clearConstructor } from '../../services/slices/constructorSlice';
-//import { clearOrderModalData } from '../../services/slices/orderSlice';
 import { useNavigate } from 'react-router-dom';
 
-
 export const BurgerConstructor: FC = () => {
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  //  useEffect(() => {
-  //   dispatch(clearOrderModalData());
-  //  });
 
   const user = useSelector((state: RootState) => state.auth.user);
 
   const { bun, ingredients } = useSelector(
     (state: RootState) => state.burgerConstructor
   );
-  const { orderModalData, orderRequest } = useSelector(
-    (state: RootState) => state.order
+
+  const { data, orderRequest } = useSelector(
+    (state: RootState) => state.createOrder
   );
 
   const onOrderClick = () => {
     if (!user || !user.email) {
-      navigate('/login' ); //{ state: { from: location.pathname}}
+      navigate('/login');
       return;
     }
 
@@ -43,22 +39,16 @@ export const BurgerConstructor: FC = () => {
     ];
     dispatch(createOrder(ingredientsIds));
     dispatch(clearConstructor());
-    //dispatch(clearOrderModalData());
   };
 
   const constructorItems = {
     bun,
     ingredients
   };
-const handleCloseModal = () => {
-    closeOrderModal();
+
+  const closeModal = () => {
     navigate(-1);
-    return;
   };
-  // const handleCloseModal = () => {
-  //   console.log('Закрываем модалку');
-  //   dispatch(closeOrderModal());
-  // };
 
   const price = useMemo(
     () =>
@@ -75,9 +65,9 @@ const handleCloseModal = () => {
       price={price}
       orderRequest={orderRequest}
       constructorItems={constructorItems}
-      orderModalData={orderModalData}
+      orderModalData={data}
       onOrderClick={onOrderClick}
-      closeOrderModal={handleCloseModal}
+      closeOrderModal={closeModal}
     />
   );
 };
