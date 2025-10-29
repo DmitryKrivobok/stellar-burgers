@@ -34,6 +34,9 @@ export const registerUser = createAsyncThunk(
   'auth/register',
   async (data: { email: string; password: string; name: string }, thunkAPI) => {
     const response = await registerUserApi(data);
+    if (!response.success) {
+      return thunkAPI.rejectWithValue(response);
+    }
     return response;
   }
 );

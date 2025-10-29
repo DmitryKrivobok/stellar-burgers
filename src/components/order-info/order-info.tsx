@@ -7,7 +7,6 @@ import { fetchOrderByNumber } from '../../services/slices/orderSlice';
 import { useDispatch, useSelector, RootState } from '../../services/store';
 
 export const OrderInfo: FC = () => {
-  
   const dispatch = useDispatch();
   const { number } = useParams<{ number: string }>();
   const orderData = useSelector(

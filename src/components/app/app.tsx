@@ -14,7 +14,7 @@ import {
   useLocation,
   useNavigate,
   Outlet,
-  useParams,
+  useParams
 } from 'react-router-dom';
 import { AppHeader, Modal, OrderInfo, IngredientDetails } from '@components';
 import {
@@ -71,7 +71,6 @@ const App: React.FC = () => {
 
   const handleCloseModal = () => {
     navigate(-1);
-    
   };
 
   const OrderModalWrapper = () => {

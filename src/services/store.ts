@@ -4,7 +4,7 @@ import ingredientsSlice from './slices/ingredientsSlice';
 import constructorSlice from './slices/constructorSlice';
 import orderSlice from './slices/orderSlice';
 import authSlice from './slices/authSlice';
-import createOrderSlice from './slices/createOrderSlice'; 
+import createOrderSlice from './slices/createOrderSlice';
 import {
   TypedUseSelectorHook,
   useDispatch as dispatchHook,
@@ -16,7 +16,7 @@ export const rootReducer = combineReducers({
   burgerConstructor: constructorSlice,
   order: orderSlice,
   auth: authSlice,
-  createOrder: createOrderSlice,
+  createOrder: createOrderSlice
 });
 
 const store = configureStore({
