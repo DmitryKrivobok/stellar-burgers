@@ -13,7 +13,7 @@ import {
   TLoginData
 } from '../../utils/burger-api';
 
-interface AuthState {
+export interface AuthState {
   user: TUser;
   isLoading: boolean;
   error: string | null;
@@ -90,7 +90,7 @@ export const logout = createAsyncThunk('auth/logout', async () => {
   resetTokens();
 });
 
-const authSlice = createSlice({
+export const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {

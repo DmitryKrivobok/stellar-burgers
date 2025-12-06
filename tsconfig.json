@@ -28,5 +28,6 @@
       "@selectors": ["src/services/selectors"]
     }
   },
-  "include": ["src"]
+"include": ["src/**/*", "cypress/**/*"],
+"exclude": ["cypress/**/*", "node_modules"]
 }

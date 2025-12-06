@@ -37,7 +37,7 @@ export const createOrder = createAsyncThunk<
   }
 });
 
-const createOrderSlice = createSlice({
+ export const createOrderSlice = createSlice({
   name: 'createOrder',
   initialState,
   reducers: {

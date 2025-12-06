@@ -1,0 +1,44 @@
+{
+    "data": [
+      {
+        "id": "1",
+        "name": "Краторная булка N-200i",
+        "type": "bun",
+        "proteins": 80,
+        "fat": 24,
+        "carbohydrates": 53,
+        "calories": 420,
+        "price": 1255,
+        "image": "/images/bun.png",
+        "image_mobile": "/images/bun-mobile.png",
+        "image_large": "/images/bun-large.png"
+      },
+      {
+        "id": "2",
+        "name": "Филе Люминесцентного тетраодонтимформа",
+        "type": "main",
+        "proteins": 44,
+        "fat": 26,
+        "carbohydrates": 85,
+        "calories": 643,
+        "price": 988,
+        "image": "/images/main.png",
+        "image_mobile": "/images/main-mobile.png",
+        "image_large": "/images/main-large.png"
+      },
+      {
+        "id": "3",
+        "name": "Соус Spicy-X",
+        "type": "sauce",
+        "proteins": 20,
+        "fat": 30,
+        "carbohydrates": 40,
+        "calories": 30,
+        "price": 90,
+        "image": "/images/sauce.png",
+        "image_mobile": "/images/sauce-mobile.png",
+        "image_large": "/images/sauce-large.png"
+      }
+    ]
+  }
+  
