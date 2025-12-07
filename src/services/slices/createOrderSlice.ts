@@ -10,7 +10,7 @@ interface OrderState {
   orderCreated: boolean;
 }
 
-const initialState: OrderState = {
+export const initialState: OrderState = {
   orderRequest: false,
   orderError: null,
   data: null,

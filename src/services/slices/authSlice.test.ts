@@ -1,9 +1,7 @@
 /// <reference types="jest" />
 
-
-
-import { clearError, AuthState } from './authSlice';
-import reducer, { authSlice } from './authSlice';
+import { clearError, initialState } from './authSlice';
+import reducer from './authSlice';
 
 import {
   registerUser,
@@ -20,12 +18,6 @@ const mockUser: TUser = {
   name: 'Иван',
   email: 'ivan@example.com'
 };
-
-let initialState: AuthState;
-
-beforeEach(() => {
-  initialState = authSlice.getInitialState();
-});
 
 describe('authSlice', () => {
   describe('Начальное состояние', () => {

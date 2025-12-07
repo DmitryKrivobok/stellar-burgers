@@ -1,6 +1,5 @@
 /// <reference types="jest" />
 
-
 import { configureStore, EnhancedStore } from '@reduxjs/toolkit';
 import constructorSlice, {
   addBun,
@@ -8,10 +7,10 @@ import constructorSlice, {
   removeIngredient,
   moveIngredientUp,
   moveIngredientDown,
-  clearConstructor
+  clearConstructor,
+  initialState
 } from './constructorSlice';
 import { TIngredient } from '../../utils/types';
-
 
 const mockBun: TIngredient = {
   _id: 'bun-1',
@@ -68,11 +67,7 @@ describe('тесты слайса конструктора', () => {
 
   test('проверка инициализации состояния', () => {
     const result = store.getState().burgerConstructor;
-    expect(result).toEqual({
-      bun: null,
-      ingredients: [],
-      price: 0
-    });
+    expect(result).toEqual(initialState);
   });
 
   test('добавление булочки (addBun)', () => {
@@ -201,4 +196,3 @@ describe('тесты слайса конструктора', () => {
     expect(state.ingredients).toHaveLength(0);
   });
 });
-

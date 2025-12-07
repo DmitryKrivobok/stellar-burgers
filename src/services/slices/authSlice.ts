@@ -20,7 +20,7 @@ export interface AuthState {
   authChecked: boolean;
 }
 
-const initialState: AuthState = {
+export const initialState: AuthState = {
   user: {
     name: '',
     email: ''

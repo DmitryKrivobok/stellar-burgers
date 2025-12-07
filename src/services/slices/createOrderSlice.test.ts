@@ -1,8 +1,7 @@
 /// <reference types="jest" />
 
-
-import { createOrder, closeOrderModal } from './createOrderSlice';
-import reducer, { createOrderSlice } from './createOrderSlice';
+import { createOrder, closeOrderModal, initialState } from './createOrderSlice';
+import reducer from './createOrderSlice';
 import type { TOrder } from '@utils-types';
 
 const mockOrder: TOrder = {
@@ -18,8 +17,6 @@ const mockOrder: TOrder = {
 const mockIngredients = ['ing-1', 'ing-2', 'ing-3'];
 
 describe('createOrderSlice', () => {
-  const initialState = createOrderSlice.getInitialState();
-
   test('должно иметь корректное начальное состояние', () => {
     expect(initialState).toEqual({
       orderRequest: false,

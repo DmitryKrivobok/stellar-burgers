@@ -1,6 +1,5 @@
-
-
 /// <reference types="jest" />
+
 import { configureStore, EnhancedStore } from '@reduxjs/toolkit';
 import orderSlice, {
   fetchFeeds,
