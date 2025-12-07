@@ -8,7 +8,9 @@ const CONSTRUCTOR_BUN_BOTTOM = '[data-cy=constructor-bun-bottom]';
 const CONSTRUCTOR_FILLING = '[data-cy=constructor-filling]';
 const CONSTRUCTOR_PRICE = '[data-cy=constructor-price]';
 const ORDER_NUMBER = '[data-cy=order-number]';
+const INGREDIENT_CARD = '[data-cy=ingredient-card]';
 const ORDER_BUTTON = 'Оформить заказ';
+const BUN = 'Краторная булка N-200i';
 
 describe('Оформление заказа', () => {
   beforeEach(() => {
@@ -36,30 +38,30 @@ describe('Оформление заказа', () => {
     cy.wait('@getUser');
   });
 
-  test('должен оформить заказ, показать номер и очистить конструктор', () => {
+  it('добавление ингредиентов в конструктор', () => {
     // Собираем бургер 
-    cy.contains('Краторная булка N-200i')
-      .parent('[data-cy=ingredient-card]')
+    cy.contains(BUN)
+      .parent(INGREDIENT_CARD)
       .find('button')
       .click();
 
     cy.contains('Филе Люминесцентного тетраодонтимформа')
-      .parent('[data-cy=ingredient-card]')
+      .parent(INGREDIENT_CARD)
       .find('button')
       .click();
 
     cy.contains('Соус Spicy-X')
-      .parent('[data-cy=ingredient-card]')
+      .parent(INGREDIENT_CARD)
       .find('button')
       .click();
 
     // Проверяем, что ингредиенты в конструкторе
-    cy.get(CONSTRUCTOR_BUN_TOP).should('contain', 'Краторная булка N-200i');
+    cy.get(CONSTRUCTOR_BUN_TOP).should('contain', BUN);
     cy.get(CONSTRUCTOR_FILLING).should('have.length.at.least', 2);
     cy.get(CONSTRUCTOR_PRICE).should('contain', '2333');
   });
 
-  test('должен оформить заказ, показать номер и очистить конструктор', () => {
+  it('должен оформить заказ, показать номер и очистить конструктор', () => {
     // Оформляем заказ 
     cy.contains(ORDER_BUTTON).click();
 
@@ -76,16 +78,16 @@ describe('Оформление заказа', () => {
     cy.get(MODAL).should('not.exist');
 
     // Проверяем, что конструктор пуст
-    cy.get(CONSTRUCTOR_BUN_TOP).should('not.contain', 'Краторная булка N-200i');
+    cy.get(CONSTRUCTOR_BUN_TOP).should('not.contain', BUN);
     cy.get(CONSTRUCTOR_BUN_BOTTOM).should(
       'not.contain',
-      'Краторная булка N-200i'
+      BUN
     );
     cy.get(CONSTRUCTOR_FILLING).should('have.length', 0);
     cy.get(CONSTRUCTOR_PRICE).should('contain', '0');
   });
 
-  test('должен закрыть модальное окно по клику на оверлей', () => {
+  it('должен закрыть модальное окно по клику на оверлей', () => {
     cy.contains(ORDER_BUTTON).click();
     cy.wait('@createOrder');
     cy.get(MODAL).should('be.visible');
@@ -95,7 +97,7 @@ describe('Оформление заказа', () => {
     cy.get(MODAL).should('not.exist');
   });
 
-  test('должен закрыть модальное окно по нажатию Esc', () => {
+  it('должен закрыть модальное окно по нажатию Esc', () => {
     cy.contains('Оформить заказ').click();
     cy.wait('@createOrder');
     cy.get(MODAL).should('be.visible');
