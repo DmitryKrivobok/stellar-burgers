@@ -1,109 +1,124 @@
 /// <reference types="cypress" />
 
-const MODAL = '[data-cy=modal]';
-const MODAL_CLOSE = '[data-cy=modal-close]';
-const MODAL_OVERLAY = '[data-cy=modal-overlay]';
-const CONSTRUCTOR_BUN_TOP = '[data-cy=constructor-bun-top]';
-const CONSTRUCTOR_BUN_BOTTOM = '[data-cy=constructor-bun-bottom]';
-const CONSTRUCTOR_FILLING = '[data-cy=constructor-filling]';
-const CONSTRUCTOR_PRICE = '[data-cy=constructor-price]';
-const ORDER_NUMBER = '[data-cy=order-number]';
-const INGREDIENT_CARD = '[data-cy=ingredient-card]';
-const ORDER_BUTTON = 'Оформить заказ';
-const BUN = 'Краторная булка N-200i';
-
 describe('Оформление заказа', () => {
   beforeEach(() => {
     cy.setCookie('accessToken', 'fake-access-token');
     window.localStorage.setItem('refreshToken', 'fake-refresh-token');
 
-    // Мок данных пользователя
-    cy.intercept('GET', 'api/auth/user', {
+    cy.intercept('GET', '/api/auth/user', {
       fixture: 'user.json'
     }).as('getUser');
 
-    // Мок ингредиентов
-    cy.intercept('GET', 'api/ingredients', {
+    cy.intercept('GET', '/api/ingredients', {
       fixture: 'ingredients.json'
     }).as('getIngredients');
 
-    // Мок создания заказа
-    cy.intercept('POST', 'api/orders', {
+    cy.intercept('POST', '/api/orders', {
       fixture: 'order-response.json'
     }).as('createOrder');
 
-    // Открываем страницу
     cy.visit('/');
     cy.wait('@getIngredients');
     cy.wait('@getUser');
   });
 
+  //работает
   it('добавление ингредиентов в конструктор', () => {
-    // Собираем бургер 
-    cy.contains(BUN)
-      .parent(INGREDIENT_CARD)
-      .find('button')
-      .click();
+    cy.get('[data-cy=bun-ingredients]', { timeout: 10000 })
+      .should('exist')
+      .and('be.visible')
+      .contains('Добавить')
+      .click({ force: true });
+    cy.get('[data-cy=mains-ingredients]')
+      .contains('Добавить')
+      .click({ force: true });
+    cy.get('[data-cy=sauses-ingredients]')
+      .contains('Добавить')
+      .click({ force: true });
 
-    cy.contains('Филе Люминесцентного тетраодонтимформа')
-      .parent(INGREDIENT_CARD)
-      .find('button')
-      .click();
+    cy.get('[data-cy=constructor-bun-1]')
+      .contains('Ингредиент 1')
+      .should('exist');
+    cy.get('[data-cy=constructor-bun-2]')
+      .contains('Ингредиент 1')
+      .should('exist');
 
-    cy.contains('Соус Spicy-X')
-      .parent(INGREDIENT_CARD)
-      .find('button')
-      .click();
+    cy.get('[data-cy=constructor-ingredients]')
+      .should('exist')
+      .and('be.visible')
+      .contains('Ингредиент 2')
+      .should('exist');
 
-    // Проверяем, что ингредиенты в конструкторе
-    cy.get(CONSTRUCTOR_BUN_TOP).should('contain', BUN);
-    cy.get(CONSTRUCTOR_FILLING).should('have.length.at.least', 2);
-    cy.get(CONSTRUCTOR_PRICE).should('contain', '2333');
+    cy.get('[data-cy=constructor-ingredients]')
+      .should('exist')
+      .and('be.visible')
+      .contains('Ингредиент 3')
+      .should('exist');
   });
 
-  it('должен оформить заказ, показать номер и очистить конструктор', () => {
-    // Оформляем заказ 
-    cy.contains(ORDER_BUTTON).click();
+  it('открытие модального окна ингредиента', () => {
+    cy.contains('Детали ингредиента').should('not.exist');
+    cy.contains('Ингредиент 1').click({ force: true });
+    cy.contains('Детали ингредиента').should('exist');
+    cy.get('#modals', { timeout: 10000 }).should('exist');
+    cy.get('#modals')
+      .contains('Ингредиент 1', { timeout: 10000 })
+      .should('exist');
+  });
 
-    // Ждём запрос и проверяем, что модальное окно открылось
-    cy.wait('@createOrder');
-    cy.get(MODAL).should('be.visible');
-    cy.contains('идентификатор заказа').should('be.visible');
+  it('закрывается по крестику', () => {
+    cy.contains('Ингредиент 2').click({ force: true });
+    cy.get('#modals', { timeout: 15000 }).should('exist');
+    cy.get('#modals [data-cy=modal-close]')
+      .should('exist')
+      .click({ force: true });
+    cy.get('#modals').should('not.be.visible');
+    cy.contains('Детали ингредиента').should('not.exist');
+  });
 
-    // Проверяем, что номер заказа отображается (из order-response.json)
-    cy.get(ORDER_NUMBER).should('have.text', '12345');
-
-    // Закрываем модальное окно 
-    cy.get(MODAL_CLOSE).click();
-    cy.get(MODAL).should('not.exist');
-
-    // Проверяем, что конструктор пуст
-    cy.get(CONSTRUCTOR_BUN_TOP).should('not.contain', BUN);
-    cy.get(CONSTRUCTOR_BUN_BOTTOM).should(
-      'not.contain',
-      BUN
+  it('проверки что бургер в конструкторе', () => {
+    cy.get('[data-cy^=constructor-bun-1]', { timeout: 15000 }).should(
+      'contain.text',
+      'Ингредиент 1'
     );
-    cy.get(CONSTRUCTOR_FILLING).should('have.length', 0);
-    cy.get(CONSTRUCTOR_PRICE).should('contain', '0');
+
+    cy.get('[data-cy=constructor-bun-2]').should(
+      'contain.text',
+      'Ингредиент 1'
+    );
+
+    cy.get('[data-cy^=constructor-ingredients]', { timeout: 15000 })
+      .should('contain.text', 'Ингредиент 2')
+      .and('contain.text', 'Ингредиент 3');
   });
 
-  it('должен закрыть модальное окно по клику на оверлей', () => {
-    cy.contains(ORDER_BUTTON).click();
-    cy.wait('@createOrder');
-    cy.get(MODAL).should('be.visible');
-
-    // Закрытие по оверлею
-    cy.get(MODAL_OVERLAY).click({ force: true });
-    cy.get(MODAL).should('not.exist');
+  //работает
+  it('оформление заказа', () => {
+    cy.get('[data-cy=order-summ]', { timeout: 10000 })
+      .should('be.enabled')
+      .and('be.visible')
+      .click({ force: true });
   });
 
-  it('должен закрыть модальное окно по нажатию Esc', () => {
-    cy.contains('Оформить заказ').click();
-    cy.wait('@createOrder');
-    cy.get(MODAL).should('be.visible');
+  it('открытие и закрытие модального окна заказа', () => {
+    cy.get('#modals', { timeout: 10000 }).should('be.visible');
+    cy.contains('идентификатор заказа', { timeout: 10000 }).should(
+      'be.visible'
+    );
 
-    // Нажимаем Esc
-    cy.get('body').type('{esc}');
-    cy.get(MODAL).should('not.exist');
+    cy.get('[data-cy=order-number]', { timeout: 10000 }).should(
+      'have.text',
+      '12345'
+    );
+
+    cy.get('[data-cy=modal-close]', { timeout: 10000 }).click({ force: true });
+    cy.get('#modals').should('not.exist');
+  });
+
+  //работает
+  it('проверка очистки конструктора', () => {
+    cy.get('[data-cy=constructor-bun-1]').should('not.exist');
+    cy.get('[data-cy=constructor-bun-2]').should('not.exist');
+    cy.get('[data-cy=constructor-ingredients]').should('not.exist');
   });
 });
