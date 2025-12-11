@@ -7,7 +7,7 @@ interface IBurgerConstructorState {
   price: number;
 }
 
-const initialState: IBurgerConstructorState = {
+export const initialState: IBurgerConstructorState = {
   bun: null,
   ingredients: [],
   price: 0

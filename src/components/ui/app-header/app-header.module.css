@@ -33,6 +33,9 @@
   color: var(--text-inactive-color);
 }
 .link_position_last_active {
+  display: flex;
+  justify-content: flex-end;
+  flex-basis: 35%;
   color: var(--text-primary-color);
   text-decoration: none;
 }

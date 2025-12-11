@@ -13,14 +13,14 @@ import {
   TLoginData
 } from '../../utils/burger-api';
 
-interface AuthState {
+export interface AuthState {
   user: TUser;
   isLoading: boolean;
   error: string | null;
   authChecked: boolean;
 }
 
-const initialState: AuthState = {
+export const initialState: AuthState = {
   user: {
     name: '',
     email: ''
@@ -34,6 +34,9 @@ export const registerUser = createAsyncThunk(
   'auth/register',
   async (data: { email: string; password: string; name: string }, thunkAPI) => {
     const response = await registerUserApi(data);
+    if (!response.success) {
+      return thunkAPI.rejectWithValue(response);
+    }
     return response;
   }
 );
@@ -87,7 +90,7 @@ export const logout = createAsyncThunk('auth/logout', async () => {
   resetTokens();
 });
 
-const authSlice = createSlice({
+export const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {

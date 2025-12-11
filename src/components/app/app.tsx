@@ -2,6 +2,7 @@ import { ConstructorPage } from '@pages';
 import '../../index.css';
 import styles from './app.module.css';
 import React from 'react';
+import { useState } from 'react';
 import { useDispatch, useSelector, RootState } from '../../services/store';
 import { useEffect } from 'react';
 import { fetchIngredients } from '../../services/slices/ingredientsSlice';
@@ -43,7 +44,7 @@ const ProtectedRoute = () => {
 };
 
 const PublicRoute = () => {
-  const { user } = useSelector((state: RootState) => state.auth);
+  const user = useSelector((state: RootState) => state.auth.user);
   const location = useLocation();
 
   if (user.email !== '') {
@@ -68,7 +69,7 @@ const App: React.FC = () => {
   const state = location.state as { background?: Location };
   const background = state && state.background;
 
-  const handleModalClose = () => {
+  const handleCloseModal = () => {
     navigate(-1);
   };
 
@@ -76,7 +77,7 @@ const App: React.FC = () => {
     const { number } = useParams();
 
     return (
-      <Modal title={`#${number}`} onClose={handleModalClose}>
+      <Modal title={`#${number}`} onClose={handleCloseModal}>
         <OrderInfo />
       </Modal>
     );
@@ -111,7 +112,7 @@ const App: React.FC = () => {
           <Route
             path='/ingredients/:_id'
             element={
-              <Modal title='Детали ингредиента' onClose={handleModalClose}>
+              <Modal title='Детали ингредиента' onClose={handleCloseModal}>
                 <IngredientDetails />
               </Modal>
             }

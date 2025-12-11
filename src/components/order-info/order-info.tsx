@@ -9,15 +9,15 @@ import { useDispatch, useSelector, RootState } from '../../services/store';
 export const OrderInfo: FC = () => {
   const dispatch = useDispatch();
   const { number } = useParams<{ number: string }>();
+  const orderData = useSelector(
+    (state: RootState) => state.order.orderModalData
+  );
+
   useEffect(() => {
     if (number) {
       dispatch(fetchOrderByNumber(Number(number)));
     }
   }, [dispatch, number]);
-
-  const orderData = useSelector(
-    (state: RootState) => state.order.orderModalData
-  );
 
   const ingredients = useSelector((state: RootState) => state.ingredients.data);
 

@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { TOrder } from '@utils-types';
 import {
-  orderBurgerApi,
   getOrdersApi,
   getFeedsApi,
   getOrderByNumberApi
@@ -75,25 +74,6 @@ export const fetchOrders = createAsyncThunk<
   }
 });
 
-export const createOrder = createAsyncThunk<
-  TOrder,
-  string[],
-  { rejectValue: string }
->('burgerConstructor/createOrder', async (ingredientsIds, thunkAPI) => {
-  try {
-    const response = await orderBurgerApi(ingredientsIds);
-    return response.order;
-  } catch (err) {
-    if (err instanceof Error) {
-      return thunkAPI.rejectWithValue(
-        err.message || 'Ошибка при оформлении заказа'
-      );
-    } else {
-      return thunkAPI.rejectWithValue('Ошибка при оформлении заказа');
-    }
-  }
-});
-
 export const fetchOrderByNumber = createAsyncThunk<
   TOrder,
   number,
@@ -115,13 +95,7 @@ export const fetchOrderByNumber = createAsyncThunk<
 const orderSlice = createSlice({
   name: 'order',
   initialState,
-  reducers: {
-    closeOrderModal: (state) => {
-      state.orderModalData = null;
-      state.orderSuccess = false;
-      state.orderError = null;
-    }
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(fetchFeeds.pending, (state) => {
@@ -154,26 +128,6 @@ const orderSlice = createSlice({
       });
 
     builder
-      .addCase(createOrder.pending, (state) => {
-        state.orderRequest = true;
-        state.orderError = null;
-        state.orderSuccess = false;
-      })
-      .addCase(
-        createOrder.fulfilled,
-        (state, action: PayloadAction<TOrder>) => {
-          state.orderModalData = action.payload;
-          state.orders = [...state.orders, action.payload];
-          state.orderRequest = false;
-          state.orderSuccess = true;
-        }
-      )
-      .addCase(createOrder.rejected, (state, action) => {
-        state.orderRequest = false;
-        state.orderError = action.payload || 'Неизвестная ошибка';
-      });
-
-    builder
       .addCase(fetchOrderByNumber.pending, (state) => {
         state.orderRequest = true;
         state.orderSuccess = false;
@@ -197,7 +151,5 @@ const orderSlice = createSlice({
       });
   }
 });
-
-export const { closeOrderModal } = orderSlice.actions;
 
 export default orderSlice.reducer;

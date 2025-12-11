@@ -7,7 +7,7 @@ import {
   Logo,
   ProfileIcon
 } from '@zlden/react-developer-burger-ui-components';
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 
 export const AppHeaderUI: FC<TAppHeaderUIProps> = ({ userName }) => (
   <header className={styles.header}>
@@ -15,31 +15,37 @@ export const AppHeaderUI: FC<TAppHeaderUIProps> = ({ userName }) => (
       <div className={styles.menu_part_left}>
         <NavLink
           to='/'
-          end
           className={({ isActive }) =>
-            isActive ? `${styles.link} ${styles.link_active}` : styles.link
+            `${styles.link} ${isActive ? styles.link_active : ''}`
           }
         >
-          <div className='icon-wrapper'>
-            <BurgerIcon type={'primary'} />
-          </div>
-          <span className='text text_type_main-default ml-2 mr-10'>
-            Конструктор
-          </span>
+          {({ isActive }) => (
+            <>
+              <BurgerIcon
+                className=''
+                type={isActive ? 'primary' : 'secondary'}
+              />
+              <p className='text text_type_main-default ml-2 mr-10'>
+                Конструктор
+              </p>
+            </>
+          )}
         </NavLink>
 
-        <NavLink to='/feed'>
+        <NavLink
+          to='/feed'
+          className={({ isActive }) =>
+            `${styles.link} ${isActive ? styles.link_active : ''}`
+          }
+        >
           {({ isActive }) => (
-            <span
-              className={
-                isActive ? `${styles.link} ${styles.link_active}` : styles.link
-              }
-            >
-              <ListIcon type={'primary'} />
-              <span className='text text_type_main-default ml-2'>
-                Лента заказов
-              </span>
-            </span>
+            <>
+              <ListIcon
+                className=''
+                type={isActive ? 'primary' : 'secondary'}
+              />
+              <p className='text text_type_main-default ml-2'>Лента заказов</p>
+            </>
           )}
         </NavLink>
       </div>
@@ -51,15 +57,20 @@ export const AppHeaderUI: FC<TAppHeaderUIProps> = ({ userName }) => (
       <NavLink
         to='/profile'
         className={({ isActive }) =>
-          isActive ? `${styles.link} ${styles.link_active}` : styles.link
+          `${styles.link_position_last} ${isActive ? styles.link_position_last_active : ''}`
         }
       >
-        <div className='icon-wrapper'>
-          <ProfileIcon type={'primary'} />
-        </div>
-        <p className='text text_type_main-default ml-2'>
-          {userName || 'Личный кабинет'}
-        </p>
+        {({ isActive }) => (
+          <>
+            <ProfileIcon
+              className=''
+              type={isActive ? 'primary' : 'secondary'}
+            />
+            <p className='text text_type_main-default ml-2'>
+              {userName || 'Личный кабинет'}
+            </p>
+          </>
+        )}
       </NavLink>
     </nav>
   </header>
